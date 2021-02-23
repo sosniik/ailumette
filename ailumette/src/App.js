@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 
 let count,countgame
@@ -28,7 +28,8 @@ class App extends React.Component {
       stateMatch : '',
       currentmatch:currentmatch,
       countgame : 16,
-      currentcounter:currentcounter
+      currentcounter:currentcounter,
+      sentence:''
     }
   }
 
@@ -40,30 +41,39 @@ handleSubmit = async e => {
 
 }
 
+reset(){
+  this.player()
+}
+
 
 
     
 
 render(){
   return <div id="Main">
-  <div id="Arena">
-  </div>
-  <div>
+  <div className="schema">
     {this.state.currentmatch.map((line) => (
     <p>
       {line.replace(/ /g, "\u00a0")}
     </p>))}
   </div>
+  
       <form onSubmit={this.handleSubmit}>
+      <div className="input">
           Line : <input onChange={e => this.setState({stateLine:e.target.value})}></input>
           <br/>
           Match : <input onChange={e => this.setState({stateMatch:e.target.value})}></input>
           <br/>
-          <p>{`Player removed ${this.state.stateLine} match(es) from line ${this.state.stateMatch}`}</p>
           <div>
-           
           <button type="submit"> Confirmer </button>  
           </div>
+      </div>
+          <p>{`Player removed ${this.state.stateLine} match(es) from line ${this.state.stateMatch}`}</p>
+          
+      </form>
+      <p className="alert ">{this.state.sentence}</p>
+      <form onSubmit={this.reset}>
+        <button>Recommencer</button>
       </form>
      
 </div>
@@ -72,7 +82,6 @@ render(){
 replaceAt (index, replacement, sentence) {
   return sentence.substr(0, index) + replacement + sentence.substr(index + replacement.length);
 }
-
 
 
 concatline(tab){
@@ -104,7 +113,10 @@ player(answer_line,answer_matches){
       }
       console.log(this.concatline(currentmatch))
       if(countgame==1){
-          console.log("I lost.. snif.. but I’ll get you next time!!")
+        console.log("I lost.. snif.. but I’ll get you next time!!")
+        return this.setState({sentence:"I lost.. snif.. but I’ll get you next time!!"})
+       
+          
       }else{
        this.IA() 
       }
@@ -112,18 +124,25 @@ player(answer_line,answer_matches){
    }else if(answer_line>4 || answer_line==0) {
       console.log("\n--------------------------------\nError: this line is out of range\n--------------------------------")
       this.player()
+      return this.setState({sentence:"Error: this line is out of range"})
    }else if(answer_line<0){
        console.log("\n-----------------------------------------------\nError: invalid input (positive number expected)\n-----------------------------------------------")        
        this.player()
+       return this.setState({sentence:"Error: invalid input (positive number expected)"})
    }else if(answer_matches<0){
        console.log("\n-----------------------------------------------\nError: invalid input (positive number expected)\n-----------------------------------------------")
        this.player()
+       return this.setState({sentence:"Error: invalid input (positive number expected)"})
    }else if(answer_matches>3){
        console.log("\n--------------------------------------\nError: not enough matches on this line\n--------------------------------------")
        this.player()
+       return this.setState({sentence:"Error: not enough matches on this line"})
+
    }else if(isNaN(answer_matches) || isNaN(answer_line)){
        console.log("\n-----------------------------------------------\nError: invalid input (positive number expected)\n-----------------------------------------------")
        //player()
+       return this.setState({sentence:"Error: invalid input (positive number expected)"})
+
    }else{    
       this.player()
   }
@@ -152,13 +171,14 @@ for(let i = 0; i < random_number_matches; i++){
 console.log(this.concatline(currentmatch))
 if(countgame==1){
   console.log("You lost, too bad")
+  return this.setState({sentence:"You lost, too bad"})
 }else{
   this.player()
 }  
+return  this.setState({sentence:`AI'turn...,AI removed ${random_number_matches} match(es) from line ${random_number_line}`})
 }else{
 this.IA()      
 }
-
 
 
 }
